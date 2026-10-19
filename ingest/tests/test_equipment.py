@@ -2,7 +2,7 @@ from __future__ import annotations
 import random
 from datetime import date
 
-import pytest
+import pytest # type: ignore
 
 from ingest.domain.catalogs import MODALITIES, STATUSES
 from ingest.generators.equipment import EquipmentRow, generate_equipment
