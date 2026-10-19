@@ -4,22 +4,22 @@ from __future__ import annotations
 
 from ingest.domain.catalogs import MODALITIES
 from ingest.domain.failure_catalog import FAILURE_CODES, FAILURE_CODES_BY_MODALITY
-from ingest.generators.failure_codes import generate_failure_codes
+from ingest.generators.failure_codes import load_failure_codes
 
 ALLOWED_SEVERITIES = {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
 
 
 def test_count_matches_catalog():
-    assert len(generate_failure_codes()) == len(FAILURE_CODES)
+    assert len(load_failure_codes()) == len(FAILURE_CODES)
 
 
 def test_codes_unique():
-    codes = [r.failure_code for r in generate_failure_codes()]
+    codes = [r.failure_code for r in load_failure_codes()]
     assert len(set(codes)) == len(codes)
 
 
 def test_severity_in_allowed_set():
-    assert {r.severity for r in generate_failure_codes()} <= ALLOWED_SEVERITIES
+    assert {r.severity for r in load_failure_codes()} <= ALLOWED_SEVERITIES
 
 
 def test_all_modalities_have_codes():

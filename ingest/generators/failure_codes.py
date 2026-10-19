@@ -1,8 +1,13 @@
-"""Failure code reference table generator.
+# ingest/generators/failure_codes.py
+"""Failure code reference table loader.
 
-Unlike the other generators, this is a static catalog — no randomness. The
-function takes no `rng` parameter for that reason; the CLI handles it
-separately. Adding `rng` and ignoring it would be misleading.
+This is a DIMENSION table whose contents are GIVEN by domain knowledge, not
+synthesized. There is no `rng` parameter because there is nothing to sample:
+the catalog IS the data. Randomness enters only in `work_orders.py`, where each
+CM event samples a valid code from `FAILURE_CODES_BY_MODALITY[modality]`.
+
+Contrast with `equipment.py` and `technicians.py`, which DO take `rng` because
+their population (which units exist, which people work here) must be invented.
 """
 
 from __future__ import annotations
@@ -22,6 +27,6 @@ class FailureCodeRow:
         return asdict(self)
 
 
-def generate_failure_codes() -> list[FailureCodeRow]:
-    """Return the full static failure-code reference table."""
+def load_failure_codes() -> list[FailureCodeRow]:
+    """Return the full failure-code reference table. Deterministic."""
     return [FailureCodeRow(**row) for row in FAILURE_CODES]

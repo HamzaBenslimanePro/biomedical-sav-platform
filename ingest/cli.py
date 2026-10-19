@@ -11,7 +11,7 @@ import random
 
 from ingest.config import GeneratorConfig
 from ingest.generators.equipment import generate_equipment
-from ingest.generators.failure_codes import generate_failure_codes
+from ingest.generators.failure_codes import load_failure_codes
 from ingest.writer import write_parquet
 
 log = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ def main() -> None:
         log.info("equipment: wrote %d rows to %s", len(rows), path)
 
     if args.table in ("failure_codes", "all"):
-        rows = generate_failure_codes()
+        rows = load_failure_codes()
         path = write_parquet(rows, "failure_codes", config.output_dir)
         log.info("failure_codes: wrote %d rows to %s", len(rows), path)
 
