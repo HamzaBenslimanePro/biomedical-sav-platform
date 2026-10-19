@@ -6,24 +6,26 @@
 
 | Tool | Version | Verified on | Notes |
 |------|---------|-------------|-------|
-| Python | 3.12.x | TBD | target local + CI |
-| dbt-core | TBD | TBD | pin in requirements |
-| dbt-duckdb | TBD | TBD | local adapter |
+| Python | 3.12.4 | 2026-10-19 | target local + CI |
+| dbt-core | 1.12.6 | 2026-10-19 | pinned in requirements.txt |
+| dbt-duckdb | 1.11.0 | 2026-10-19 | local adapter |
 | dbt-snowflake | TBD (optional) | TBD | only if cloud target is Snowflake |
-| DuckDB | TBD | TBD | local warehouse engine |
-| Dagster | TBD | TBD | orchestration (see ADR-0001) |
-| pandas | TBD | TBD | generator only — not for pipeline |
-| Faker | TBD | TBD | synthetic data |
-| pyarrow | TBD | TBD | Parquet |
-| ruff | TBD | TBD | Python lint |
-| sqlfluff | TBD | TBD | SQL lint |
+| DuckDB | 1.5.6 | 2026-10-19 | local warehouse engine |
+| Dagster | 1.13.26 | 2026-10-19 | orchestration (see ADR-0001) |
+| pandas | 2.2.2 | 2026-10-19 | generator only — not for pipeline |
+| Faker | 40.43.0 | 2026-10-19 | synthetic data |
+| pyarrow | 24.0.0 | 2026-10-19 | Parquet |
+| ruff | 0.17.1 | 2026-10-19 | Python lint |
+| sqlfluff | 4.4.0 | 2026-10-19 | SQL lint |
 | Great Expectations | optional | TBD | only if adopted (see DEBT.md D-003) |
 
 ## Local environment
-- OS: macOS / Linux (fill in)
-- Docker Desktop: TBD
+- OS: Windows
 - Make: GNU Make ≥ 3.82 (required by `.RECIPEPREFIX`)
 
 ## CI environment
 - GitHub Actions runner: ubuntu-latest
-- Python via actions/setup-python: 3.12
+- Python : Python 3.12.4
+
+## Defered:
+- containerization: N/A (see ADR-0004)
