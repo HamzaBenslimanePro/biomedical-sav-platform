@@ -58,3 +58,13 @@ See `docs/data_quality_rules.md`.
 - Synthetic data only (no real SAP connectivity by design).
 - Streaming ingestion deferred to project P2.
 - Kubernetes deployment deferred to project P11.
+
+## Containerization Plan (deferred)
+Containerization is deferred to project P11 (Cloud Deployment Blueprint) due to a
+local storage constraint (see ADR-0004). The `docker-compose.yml` would contain:
+- `dagster` — the orchestrator webserver + daemon
+- `dbt-runner` — a slim image with the venv + dbt project
+- `postgres` (optional) — only if a production-like warehouse tier is added
+
+Reproducibility in P1 relies on `make bootstrap` (venv + pinned `requirements.txt`)
+and `make run` (pipeline entrypoint) instead.

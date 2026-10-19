@@ -24,11 +24,10 @@ logic, and the trade-offs I made.
 Stack: Python ingestion → Parquet lake (partitioned) → dbt (staging → intermediate →
 marts) → DuckDB locally / Snowflake or BigQuery in cloud → Dagster or Airflow
 orchestration → data quality gates (dbt tests + source freshness, optional Great
-Expectations) → BI dashboard (Metabase/Streamlit/Power BI). All containerised via
-docker compose. CI runs dbt build on PRs.
+Expectations) → BI dashboard (Metabase/Streamlit/Power BI). CI runs dbt build on PRs.
 
 Deliverables rubric (hold me to this, score me against it):
-- P0: public repo, clean history, README, docker compose up works, 8–12 layered dbt
+- P0: public repo, clean history, README, ``make bootstrap && make run`` works from a clean clone, 8–12 layered dbt
   models with tests, orchestrated DAG, evidence the pipeline catches bad data.
 - P1: incremental fact model with unique_key + is_incremental() filter, documented
   idempotent backfill, source freshness check, GitHub Actions CI that fails on a
@@ -42,7 +41,7 @@ Build steps and exit criteria:
    Exit: dbt build succeeds, queryable table in DuckDB.
 3. Incremental logic + tests. Exit: double-run does not duplicate rows; breaking a
    source file fails a test.
-4. Orchestration + Docker. Exit: docker compose up runs the full pipeline from clean.
+4. Orchestration. Exit: ``make bootstrap && make run`` works from a clean clone.
 5. Quality gates + CI. Exit: broken model fails CI; DAG blocks dashboard on failure.
 6. Dashboard + docs. Exit: live dashboard, dbt docs generated, 2-min demo recorded.
 
@@ -90,7 +89,7 @@ If I do not name a mode, default to [PAIR] and state which mode you are in.
    arriving data handling, backfill strategy, and why full-refresh is not the answer.
 6. Tests must actually fail. When I add a test, make me break the data on purpose
    and show the failure. A green CI that never goes red is not evidence.
-7. No scope creep. If I ask for streaming, k8s, or a second warehouse mid-project,
+7. No scope creep. If I ask for streaming, k8s, Docker/containerization, or a second warehouse mid-project,
    remind me of P1's rubric and say "that is P2/P11 — park it in DEBT.md."
 8. Enforce exit criteria. Do not let me start step N+1 until step N's exit criterion
    is demonstrably met (I show you the output/log/screenshot). If I insist, make me

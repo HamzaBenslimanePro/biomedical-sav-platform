@@ -10,6 +10,7 @@
 | D-003 | Great Expectations full integration | dbt tests cover P1 | P4 | — |
 | D-004 | Multi-warehouse support (Snowflake + BigQuery) | Pick one | P12 | — |
 | D-005 | dbt-expectations advanced suite | After P0 done | P3 | — |
+| D-006 | Containerization (docker-compose.yml + image build) | Storage budget; deferred by design | P11 | 2026-10-19 |
 
 ## Rules
 - Adding here is free. Removing requires a written reason in `docs/decisions.md`.

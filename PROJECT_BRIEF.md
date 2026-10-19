@@ -31,13 +31,14 @@ Build an ELT platform over synthetic SAP-style biomedical service data that:
 - A second warehouse (Snowflake AND BigQuery).
 - Real SAP connectivity. Data is synthetic by design.
 - Authentication / multi-tenancy.
+- Containerization — deferred to P11 (see ADR-0004).
 
 ## Deliverables Rubric
 
 ### P0 — Non-negotiable foundation
 - [ ] Public GitHub repo, clean commit history.
 - [ ] README: problem, architecture diagram, how to run, decisions, limitations.
-- [ ] `docker compose up` reproduces the full pipeline from a clean state.
+- [ ] `make bootstrap && make run` reproduces the full pipeline from a clean clone
 - [ ] 8–12 dbt models following staging → intermediate → marts.
 - [ ] Generic tests (unique, not_null) + custom tests on every layer.
 - [ ] Orchestrated DAG that runs ingest → transform → tests → dashboard refresh.
@@ -68,9 +69,9 @@ Step 3 — Incremental logic + tests (Days 6–8)
   Build: incremental fct_ with unique_key; generic + custom tests.
   Exit: double-run does not duplicate rows; breaking a source file fails a test.
 
-Step 4 — Orchestration + Docker (Days 9–11)
+Step 4 — Orchestration (Days 9–11)
   Build: Dagster job (or Airflow DAG); Dockerfile; docker-compose.yml.
-  Exit: `docker compose up` runs the full pipeline from clean; UI shows green run.
+  Exit: `make bootstrap && make run` on a fresh clone runs the full pipeline; Dagster UI shows a green run.
 
 Step 5 — Quality gates + CI (Days 12–13)
   Build: source freshness or Great Expectations checkpoint in DAG; GitHub Actions.

@@ -56,3 +56,35 @@
   - (+) One tool, one mental model; tests live in YAML next to models; run inside `dbt build` (single command, single failure surface); zero extra infra.
   - (−) Less expressive than GX for distributional/statistical checks.
   - Mitigation: `dbt-expectations` can be added without changing the mental model; GX adoption is parked in DEBT D-003 and revisited in P4 where its power is justified.
+
+---
+
+### ADR-0004: Containerization — deferred in P1
+- Status: accepted
+- Date: 2026-10-19
+- Context: the local machine has 15GB of free storage. Docker Desktop + multi-service
+  images (dbt, Dagster, Postgres) would consume ~5–7GB and grow with layer caching,
+  leaving too little headroom for the data lake, dbt artifacts, and other projects.
+  The P1 stack (DuckDB + dbt + Dagster + Python) runs natively without any server process.
+- Decision: no Docker in P1. Reproducibility is provided by `make bootstrap` (venv +
+  pinned `requirements.txt` + `dbt deps`) and `make run` (pipeline entrypoint).
+  Containerization is deferred to P11 (Cloud Deployment Blueprint), where Docker is
+  required anyway for the deployment target.
+- Alternatives considered:
+  - **Docker Desktop + compose** — reproducible and standard, but ~5–7GB of storage
+    and a background VM. Incompatible with the 15GB budget alongside the rest of
+    the portfolio.
+  - **Podman** — lighter than Docker Desktop but still requires image storage; same
+    storage math applies.
+  - **Dev containers** — heavier, not viable here.
+- Consequences:
+  - (+) Fits the storage budget; faster iteration (no image rebuilds); simpler
+    debugging (native processes, real venv, real `pdb`); no background daemon.
+  - (−) The P0 rubric item "docker compose up reproduces the pipeline" is amended to
+    "`make bootstrap && make run` reproduces the pipeline from a clean clone."
+    Reproducibility relies on pinned requirements + Makefile instead of a container image.
+  - Mitigation: include a short "Containerization plan" section in the README
+    describing exactly what the `docker-compose.yml` would contain (services:
+    dagster, dbt-runner, optionally Postgres) and why it was deferred. This turns a
+    constraint into a documented decision — a stronger interview story than silently
+    skipping Docker.
