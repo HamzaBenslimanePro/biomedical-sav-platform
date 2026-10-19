@@ -13,6 +13,7 @@ class GeneratorConfig:
     data_start_date: date = date(2023, 1, 1)
     data_end_date: date = date(2025, 12, 31)
     equipment_count: int = 500
+    technicians_count: int = 50
     sites_count: int = 8
 
     @classmethod
@@ -24,6 +25,7 @@ class GeneratorConfig:
             data_start_date=_parse_date(os.getenv("DATA_START_DATE", "2023-01-01")),
             data_end_date=_parse_date(os.getenv("DATA_END_DATE", "2025-12-31")),
             equipment_count=int(os.getenv("EQUIPMENT_COUNT", "500")),
+            technicians_count=int(os.getenv("TECHNICIANS_COUNT", "50")),
             sites_count=int(os.getenv("SITES_COUNT", "8")),
         )
 

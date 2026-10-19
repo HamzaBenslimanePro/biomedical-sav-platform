@@ -57,3 +57,7 @@ SITE_CATALOG = [
     "SITE-CASA-01", "SITE-CASA-02", "SITE-RABAT-01", "SITE-RABAT-02",
     "SITE-MARRAKECH-01", "SITE-FES-01", "SITE-TANGER-01", "SITE-AGADIR-01",
 ]
+
+# --- append to existing file ---------------------------------------------
+
+SKILL_LEVELS = ["JUNIOR", "INTERMEDIATE", "SENIOR", "EXPERT"]

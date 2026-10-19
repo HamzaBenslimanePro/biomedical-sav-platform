@@ -58,3 +58,11 @@ PM_RATE_PER_ASSET_YEAR = {
     "MRI": 4, "CT": 4, "NM": 4, "RAD": 4,      # quarterly
     "IVD_BIOCHEM": 12, "IVD_HEMA": 12, "IVD_IMMUNO": 12,  # monthly
 }
+
+PM_OUTCOMES = {"on_time": 80, "late": 15, "missed": 5}
+
+# Technician skill distribution. Junior-heavy is realistic for a 50-tech pool.
+SKILL_WEIGHTS = {"JUNIOR": 20, "INTERMEDIATE": 40, "SENIOR": 30, "EXPERT": 10}
+
+# Hire-year buckets (weighted toward recent). Sums to 100.
+HIRE_YEAR_WEIGHTS = {"0-2": 25, "3-5": 25, "6-10": 30, "11-15": 20}

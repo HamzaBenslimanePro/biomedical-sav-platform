@@ -20,5 +20,5 @@ def _row_to_dict(row) -> dict:
     if hasattr(row, "to_dict"):
         return row.to_dict()
     if is_dataclass(row):
-        return asdict(row)
+        return asdict(row) # pyright: ignore[reportArgumentType]
     return dict(row)

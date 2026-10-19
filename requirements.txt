@@ -186,7 +186,7 @@ pyarrow==24.0.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 PyAudio==0.2.14
-pybabel==0.0.0.dev0
+# pybabel==0.0.0.dev0
 pycodestyle==2.6.0
 pycparser==2.22
 pydantic==2.14.1
