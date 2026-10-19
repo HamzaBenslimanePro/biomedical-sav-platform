@@ -2,8 +2,8 @@ from __future__ import annotations
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
 
-import pyarrow as pa  # type: ignore
-import pyarrow.parquet as pq # type: ignore
+import pyarrow as pa  
+import pyarrow.parquet as pq
 
 
 def write_parquet(rows: list, table_name: str, output_dir: Path) -> Path:
