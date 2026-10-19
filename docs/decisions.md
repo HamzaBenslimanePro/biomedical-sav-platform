@@ -88,3 +88,34 @@
     dagster, dbt-runner, optionally Postgres) and why it was deferred. This turns a
     constraint into a documented decision — a stronger interview story than silently
     skipping Docker.
+
+### ADR-0005: PM compliance metric definition
+- Status: accepted
+- Date: 2026-10-19
+- Context: "PM compliance" has at least five common definitions (strict on-time,
+  grace-window, completion-based, asset-level, work-month attribution). The KPI
+  drives a maintenance manager's decisions, so a silent definition is a silent bug.
+  The contract supports schedule-based measurement because PM work orders are
+  created at schedule time with a nullable `closed_at`.
+- Decision: PM compliance = PM work orders closed on or before `pm_due_date + 7
+  days` (var `pm_grace_days`), with `pm_due_date` in the period, divided by PM
+  work orders with `pm_due_date` in the period, excluding equipment decommissioned
+  before period start. Attributed by due date. Event-level grain. A secondary
+  `pm_completion_pct` (closed at all ÷ due) is reported alongside.
+- Alternatives considered:
+  - **Completion-based denominator** (PMs closed in period) — rejected: hides
+    missed PMs, flatters the KPI, answers the wrong business question.
+  - **Strict 0-day grace** — rejected: penalizes clinically-justified delays;
+    sensitivity check shows it understates compliance by N points.
+  - **Attribution by close date** — rejected: a January PM closed in February
+    would credit February and hide January's failure.
+  - **Asset-level granularity** — deferred: variant, not the P1 headline.
+- Consequences:
+  - (+) Answers the real business question (are we maintaining on schedule?);
+    computable from the existing contract; parameterized so the definition is
+    auditable and the sensitivity check is one command.
+  - (−) Depends on the generator producing scheduled PMs with NULL `closed_at` —
+    if it only generates completed work orders, the KPI is silently inflated.
+    Mitigation: constraint stated in `docs/domain_glossary.md` and enforced by a
+    dbt test (`DQ-COMPLETE-002`: PM rows with `pm_due_date` in the past must have
+    non-NULL `closed_at` OR be classified `missed`).
