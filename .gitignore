@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.python-version
+
+# dbt
+target/
+dbt_packages/
+logs/
+profiles.yml
+*.duckdb
+*.duckdb.wal
+
+# Dagster
+.dagster/
+dagster_home/
+
+# Data lake (regenerate via generator; never commit raw data)
+data/
+!data/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+
+# CI artifacts
+coverage.xml
+htmlcov/

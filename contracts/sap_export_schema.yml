@@ -1,0 +1,65 @@
+# Data contract for the synthetic SAP SAV export.
+# The generator MUST conform to this contract; the contract is not derived from it.
+# Validated at ingestion. A schema change here is a breaking change and needs an ADR.
+
+version: 1.0
+source: sap_sav_export
+owner: hamza.benslimane
+validated_at_ingestion: true
+
+tables:
+
+  equipment:
+    description: One row per installed medical device.
+    columns:
+      equipment_id:   {type: string,  nullable: false, unique: true}
+      modality:       {type: string,  nullable: false, allowed: [MRI, CT, NM, RAD, IVD_BIOCHEM, IVD_HEMA, IVD_IMMUNO]}
+      model:          {type: string,  nullable: false}
+      manufacturer:   {type: string,  nullable: false}
+      install_date:   {type: date,    nullable: false}
+      site_id:        {type: string,  nullable: false}
+      warranty_end:   {type: date,    nullable: true}
+      status:         {type: string,  nullable: false, allowed: [OPERATIONAL, DEGRADED, DOWN, DECOMMISSIONED]}
+
+  work_orders:
+    description: One row per PM or CM intervention.
+    columns:
+      work_order_id:     {type: string,    nullable: false, unique: true}
+      equipment_id:      {type: string,    nullable: false, references: equipment.equipment_id}
+      technician_id:     {type: string,    nullable: false, references: technicians.technician_id}
+      wo_type:           {type: string,    nullable: false, allowed: [PM, CM]}
+      opened_at:         {type: timestamp, nullable: false}
+      closed_at:         {type: timestamp, nullable: true}
+      failure_code:      {type: string,    nullable: true, references: failure_codes.failure_code}
+      pm_due_date:       {type: date,      nullable: true}
+      parts_cost_eur:    {type: numeric,   nullable: true}
+      labor_hours:       {type: numeric,   nullable: true}
+      resolution_notes:  {type: string,    nullable: true}
+
+  technicians:
+    description: One row per field service engineer.
+    columns:
+      technician_id:   {type: string,  nullable: false, unique: true}
+      full_name:       {type: string,  nullable: false}
+      skill_level:     {type: string,  nullable: false, allowed: [JUNIOR, INTERMEDIATE, SENIOR, EXPERT]}
+      region:          {type: string,  nullable: false}
+      hire_date:       {type: date,    nullable: false}
+
+  failure_codes:
+    description: Reference table of failure categories.
+    columns:
+      failure_code:   {type: string,  nullable: false, unique: true}
+      label:          {type: string,  nullable: false}
+      subsystem:      {type: string,  nullable: false}
+      severity:       {type: string,  nullable: false, allowed: [LOW, MEDIUM, HIGH, CRITICAL]}
+
+# Invariants enforced at ingestion:
+invariants:
+  - id: INV-001
+    rule: "work_orders.closed_at >= work_orders.opened_at"
+  - id: INV-002
+    rule: "work_orders.wo_type = 'PM' implies pm_due_date IS NOT NULL"
+  - id: INV-003
+    rule: "work_orders.wo_type = 'CM' implies failure_code IS NOT NULL"
+  - id: INV-004
+    rule: "equipment.modality must be in the allowed set (no free-text modalities)"
