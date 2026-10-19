@@ -43,3 +43,18 @@ WARRANTY_MONTHS_BY_MODALITY = {
     "IVD_HEMA": 12,
     "IVD_IMMUNO": 12,
 }
+
+# CM rate per asset per year, weighted by age. Realistic for imaging + IVD:
+# ~4 CM/asset/year for a mid-age asset under service contract.
+CM_RATE_PER_ASSET_YEAR = {
+    "young": 2.5,   # < 3 years
+    "mid":   4.0,   # 3–10 years
+    "old":   6.0,   # > 10 years
+}
+
+# PM rate per asset per year, per manufacturer interval.
+# Imaging: quarterly. IVD: monthly. This drives the PM:CM ratio.
+PM_RATE_PER_ASSET_YEAR = {
+    "MRI": 4, "CT": 4, "NM": 4, "RAD": 4,      # quarterly
+    "IVD_BIOCHEM": 12, "IVD_HEMA": 12, "IVD_IMMUNO": 12,  # monthly
+}

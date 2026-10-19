@@ -119,3 +119,47 @@
     Mitigation: constraint stated in `docs/domain_glossary.md` and enforced by a
     dbt test (`DQ-COMPLETE-002`: PM rows with `pm_due_date` in the past must have
     non-NULL `closed_at` OR be classified `missed`).
+
+### ADR-0006: MTBF metric definition
+- Status: accepted
+- Date: 2026-10-19
+- Context: "MTBF" has multiple defensible definitions (fleet vs per-asset,
+  start-to-start vs end-of-repair, CM-only vs all failure events, censoring
+  handling). The glossary name is correct but leaves these decisions silent.
+  MTBF is the primary reliability KPI alongside MTTR and PM compliance, and it
+  depends on the work_orders generator producing enough CM events to compute
+  intervals. Must be fixed before work_orders.py is written.
+- Decision:
+  - **Headline (fleet MTBF):** total asset-operating-hours in window ÷ total CM
+    count in window. Operating hours = `min(decommission or reference, window_end)
+    − max(install, window_start)`, in hours.
+  - **Diagnostic (per-asset MTBF):** mean of `opened_at[i+1] − opened_at[i]`
+    for consecutive CM events on the same asset, for assets with ≥2 CMs.
+  - **Interval:** start-to-start (includes repair time; standard for repairable
+    systems).
+  - **Event types:** CM only. DOWN status events are excluded (they co-occur
+    with a CM and would double-count).
+  - **First failure:** excluded from MTBF (that is MTTF, a different metric).
+  - **Censoring:** left (asset installed before window_start) and right (asset
+    still running at reference_date) both handled via the operating-hours
+    formula above.
+- Alternatives considered:
+  - **End-of-repair-to-start intervals** — rejected: answers "operational
+    reliability excluding downtime," a different question; standard MTBF is
+    start-to-start.
+  - **Including first failure (install → first CM)** — rejected: this is MTTF,
+    not MTBF; blending them produces a metric nobody recognizes.
+  - **Per-asset-only reporting** — rejected: unweighted mean underweights
+    high-exposure assets; fleet MTBF is the industry KPI.
+  - **Excluding zero-failure assets from fleet denominator** — rejected: biases
+    the KPI downward by ignoring reliable assets' exposure.
+- Consequences:
+  - (+) Fleet number matches what a maintenance manager would compute; censoring
+    handled naturally by the operating-hours formula; per-asset number available
+    for diagnostics.
+  - (−) Generator must produce ≥2 CM events per asset for most assets, or
+    per-asset MTBF is NaN-dominated. Mitigation: `CM_RATE_PER_ASSET_YEAR` in
+    `domain/distributions.py`; Step 1 exit check = median asset has ≥3 CMs.
+  - (−) Depends on `install_date < opened_at < closed_at` for every CM. Add
+    invariant `INV-005: CM rows must satisfy install_date <= opened_at` to the
+    contract's invariant list; enforce as a dbt test at Step 2.
